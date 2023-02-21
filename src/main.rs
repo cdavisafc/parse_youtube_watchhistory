@@ -1,9 +1,10 @@
 
 #![feature(iter_next_chunk)]
+#![feature(option_result_contains)]
 
 use select::document::{Document, self};
-use select::node::{Data, Raw};
-use select::predicate::{Attr, Class, Name, Predicate};
+use select::node::{Data, Raw, Node};
+use select::predicate::{Attr, Class, Name, Predicate, Descendant, And};
 use chrono::{DateTime, NaiveDateTime, FixedOffset};
 use std::iter::OnceWith;
 use std::mem;
@@ -17,12 +18,21 @@ pub struct Video<'a> {
     pub date_str : String,
     pub date_watched : NaiveDateTime,
 }
+
 fn main() {
 
     let mut my_videos: Vec<Video> = vec![];
 
     let document = Document::from(include_str!("../watch-history.html"));
-    println!("loaded doc {}", document.nodes.len());
+    println!("loaded doc - num nodes {}", document.nodes.len());
+
+    // The following finds divs with class outer-cell (this is an entry in the list that represents a video) AND
+    // does not contain the string "Google Ad" in the descendants - that is, it filters out any videos that were 
+    // ads. In the end, I used different logic because this is only one way that ads show up in the feed. What I
+    // am using now is the existence of 3 anchors within that div.
+    // Keeping the code in here though, because it took me some doing to figure it out. :-) 
+    // let all_elements 
+    //     = document.find(And(Class("outer-cell"), |node: &Node| !node.inner_html().contains(&"Google Ad")));
 
     let all_elements = document.find(Class("outer-cell"));
     for node in all_elements {
