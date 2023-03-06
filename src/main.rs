@@ -8,7 +8,7 @@ pub mod youtube;
 const FILENAME : &str = "../watch-history.html";
 fn main() {
 
-    let document = youtube::parse_youtube_takeout();
+    let (document, my_videos) = youtube::parse_youtube_takeout();
 
     println!("{}", document.nodes.len());
 

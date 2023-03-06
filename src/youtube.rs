@@ -19,7 +19,7 @@ pub struct Video<'a> {
     pub date_watched: NaiveDateTime,
 }
 
-pub fn parse_youtube_takeout<'a>() -> Document {
+pub fn parse_youtube_takeout<'a>() -> (Document, Vec<Video<'a>>) {
     let mut my_videos = Vec::new();
     //    let s = String::from("foobar");
 
@@ -60,10 +60,10 @@ pub fn parse_youtube_takeout<'a>() -> Document {
                 .expect("Error parsing datetime");
 
                 my_videos.push(Video { 
-                    video_url,
-                    video_title,
-                    channel_url,
-                    channel_title,
+                    video_url : "a",
+                    video_title : "a",
+                    channel_url : "a",
+                    channel_title : "a",
                     date_watched,
                 });
             }
@@ -75,5 +75,5 @@ pub fn parse_youtube_takeout<'a>() -> Document {
         println!("{:?}", my_videos[i]);
     }
     }
-    document
+    (document, my_videos)
 }
