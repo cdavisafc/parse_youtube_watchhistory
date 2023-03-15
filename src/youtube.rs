@@ -6,23 +6,31 @@ use std::borrow::Borrow;
 use std::iter::OnceWith;
 use std::mem;
 use std::sync::mpsc::channel;
+use std::fs::File;
 
 //use crate::utils;
 // utils;
 
 #[derive(Debug)]
-pub struct Video<'a> {
-    pub video_url: &'a str,
-    pub video_title: &'a str,
-    pub channel_url: &'a str,
-    pub channel_title: &'a str,
+pub struct Video {
+    pub video_url: String,
+    pub video_title: String,
+    pub channel_url: String,
+    pub channel_title: String,
     pub date_watched: NaiveDateTime,
 }
 
-pub fn parse_youtube_takeout<'a>(document: &'a Document) -> Vec<Video<'a>> {
+pub fn parse_youtube_takeout(filename: &str) -> Vec<Video> {
     let mut my_videos = Vec::new();
 
-    //let document = Document::from(include_str!("../watch-history.html"));
+    println!("opening file {filename}");
+    let file = File::open(filename);
+    if file.is_err() {
+        panic!("Unable to open file {}", filename);
+    }
+
+
+    let document = Document::from_read(file.unwrap()).expect("unable to read document from file - are the contents HTML?");
     println!("loaded doc - num nodes {}", document.nodes.len());
 
     // The following finds divs with class outer-cell (this is an entry in the list that represents a video) AND
@@ -58,19 +66,14 @@ pub fn parse_youtube_takeout<'a>(document: &'a Document) -> Vec<Video<'a>> {
             .expect("Error parsing datetime");
 
             my_videos.push(Video {
-                video_url,
-                video_title,
-                channel_url,
-                channel_title,
+                video_url: video_url.to_owned(),
+                video_title: video_title.to_owned(),
+                channel_url: channel_url.to_owned(),
+                channel_title: channel_title.to_owned(),
                 date_watched,
             });
         }
     }
 
     my_videos
-    // println!("{}", document.nodes.len());
-
-    // for i in 0..10 {
-    //     println!("{:?}", my_videos[i]);
-    // }
 }
